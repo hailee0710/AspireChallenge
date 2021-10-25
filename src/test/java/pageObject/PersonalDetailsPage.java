@@ -208,8 +208,14 @@ public class PersonalDetailsPage {
         gm.typeIn(emailField, email);
         selectDOB(year, month, day);
         gm.typeIn(countrySelect, country);
+        while (listItems.size() == 0) {
+            countrySelect.click();
+        }
         gm.clickOnOneOfElements(listItems, 0);
         gm.clickOnElement(genderSelect);
+        while (listItems.size() == 0) {
+            genderSelect.click();
+        }
         gm.clickOnOneOfElements(listItems, gender);
         Assert.assertEquals("Progress should be " + progress, progress, progressBadge.getText().trim());
     }

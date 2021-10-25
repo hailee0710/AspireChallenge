@@ -2,6 +2,7 @@ package pageObject;
 
 import helper.GeneralMethods;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindAll;
@@ -22,6 +23,8 @@ public class RegistrationPage {
         PageFactory.initElements(driver, this);
         gm = new GeneralMethods(driver);
     }
+
+    private final By loader = By.cssSelector(".aspire-loader");
 
     @FindBy (css = "input[data-cy='register-person-name']")
     private WebElement fullNameField;
@@ -163,10 +166,16 @@ public class RegistrationPage {
             gm.typeIn(phoneField, phone);
         if (country != -1) {
             gm.clickOnElement(changeCountryBtn);
+            while (listItems.size() == 0) {
+                gm.clickOnElement(changeCountryBtn);
+            }
             gm.clickOnOneOfElements(listItems, country);
         }
         if (heardAbout != -1) {
             gm.clickOnElement(heardAboutSelect);
+            while (listItems.size() == 0) {
+                gm.clickOnElement(heardAboutSelect);
+            }
             gm.clickOnOneOfElements(listItems, heardAbout);
         }
         if (referralCode != null) {
@@ -228,6 +237,7 @@ public class RegistrationPage {
         gm.printTestStep("Pre: Enter all correct info in register page");
         fillInForm(validUserName, null, email, phone, 1, 1,  null, true);
         goNext();
+        gm.waitForElementToNotExist(loader, 30);
         return email;
     }
 

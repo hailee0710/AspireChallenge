@@ -19,7 +19,7 @@
 ![img.png](img.png)
 
 **Note**: 
-- Since it's only 3 days development, so the tests might not be very stable. There is still room for improvement and it will take time.
+- Since it's only 3 days development, so the tests might not be very stable. There is still room for improvement and it will take time. If you see a test fail at first time, please retry for several times before judging :)
 - Visual UI regression test is available and applied only to some selected test for demonstration purpose. 
 To identify the test case with Visual UI Regression, just notice that it includes the method named: `compareImagesAshot` or `compareImagesSB`
 First time running test with Visual UI Regression test, images will be collected and placed into **Reference** folder. 

@@ -138,6 +138,9 @@ public class BusinessRolePage {
         String state = countrySelect.getAttribute("aria-disabled");
         Assert.assertEquals("Country select should be disabled", "true", state);
         gm.clickOnElement(solutionSelect);
+        while (listItems.size() == 0) {
+            solutionSelect.click();
+        }
         String chipName = listItems.get(1).getText();
         gm.clickOnOneOfElements(listItems, 1);
         gm.clickOnElement(solutionSelect);
@@ -148,6 +151,9 @@ public class BusinessRolePage {
     public void checkFreelancerOptions() {
         gm.pause(500);
         solutionSelect.click();
+        while (listItems.size() == 0) {
+            solutionSelect.click();
+        }
         String chipName = listItems.get(1).getText();
         gm.clickOnOneOfElements(listItems, 1);
         solutionSelect.click();
@@ -164,6 +170,9 @@ public class BusinessRolePage {
         gm.pause(1000);
         gm.waitForElementToNotExist(loader, 30);
         gm.clickOnElement(solutionSelect);
+        while (listItems.size() == 0) {
+            solutionSelect.click();
+        }
         gm.clickWithJavaExecuter(listItems.get(index));
         gm.clickOnElement(solutionSelect);
     }
@@ -172,6 +181,9 @@ public class BusinessRolePage {
         gm.pause(500);
         gm.waitForElementToNotExist(loader, 30);
         solutionSelect.click();
+        while (listItems.size() == 0) {
+            solutionSelect.click();
+        }
         ArrayList<String> itemNames = new ArrayList<>();
         ArrayList<String> chipNames = new ArrayList<>();
         for(WebElement item : listItems) {

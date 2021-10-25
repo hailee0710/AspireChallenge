@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.Year;
 
@@ -56,6 +57,12 @@ public class RegistrationTest extends BaseTestDesktop {
     private static String shortBAErrorMsg;
     private static String shortDetailsErrorMsg;
     private static String websiteUrlErrorMsg;
+    private static String documentPath;
+    private static String imagePath;
+    private static String mainAddress;
+    private static String city;
+    private static String postcode;
+    private static String province;
 
     @BeforeClass
     public static void getAllTestData() {
@@ -102,7 +109,12 @@ public class RegistrationTest extends BaseTestDesktop {
         shortBAErrorMsg = commonMethods.getTestData("ShortBAErrorMsg");
         shortDetailsErrorMsg = commonMethods.getTestData("ShortDetailsErrorMsg");
         websiteUrlErrorMsg = commonMethods.getTestData("WebsiteUrlErrorMsg");
-
+        documentPath = commonMethods.getTestData("DocumentPath");
+        imagePath = commonMethods.getTestData("ImagePath");
+        mainAddress = commonMethods.getTestData("MainAddress");
+        city = commonMethods.getTestData("City");
+        postcode = commonMethods.getTestData("Postcode");
+        province = commonMethods.getTestData("Province");
     }
     //endregion
 
@@ -113,6 +125,7 @@ public class RegistrationTest extends BaseTestDesktop {
 
         generalMethods.printTestStep("1.User opens the Login page");
         loginPage.goToRegisterPage(loginLink);
+        generalMethods.compareImagesSB(folderName, "Register_page", null);
 
         generalMethods.printTestStep("2.Enter all valid information but email");
         registrationPage.fillInForm(validUserName, validPreferredName, invalidEmail, phone, 0, 1,  null, true);
@@ -321,6 +334,7 @@ public class RegistrationTest extends BaseTestDesktop {
         generalMethods.printTestName("======Start testing Check Resend OTP======");
         loginPage.goToRegisterPage(loginLink);
         registrationPage.validRegister(validEmail, validUserName);
+        generalMethods.compareImagesSB(folderName, "OTP_page", null);
 
         generalMethods.printTestStep("1. Check resend function");
         otpPage.resendOTP(resendMsg);
@@ -607,7 +621,7 @@ public class RegistrationTest extends BaseTestDesktop {
 
     @Test
     public void checkBusinessDetailsShortTextInFields() {
-        generalMethods.printTestName("======Start testing Register with Existing UEN======");
+        generalMethods.printTestName("======Start testing Register with short text in fields======");
         String uen = String.valueOf(Instant.now().getEpochSecond()).substring(0,9) + generalMethods.getRandomString(1);
         String shortText = generalMethods.getRandomString(10);
         loginPage.goToRegisterPage(loginLink);
@@ -623,6 +637,154 @@ public class RegistrationTest extends BaseTestDesktop {
         businessDetailsPage.goNext();
         businessDetailsPage.fillIn2ndForm(shortText, shortText, websiteURL, true,1, 1, 1);
         businessDetailsPage.validate3ErrorMsg(shortBAErrorMsg, shortDetailsErrorMsg, null);
+    }
+
+    @Test
+    public void checkBusinessDetailsWithInvalidURL() {
+        generalMethods.printTestName("======Start testing Register with Invalid URL======");
+        String uen = String.valueOf(Instant.now().getEpochSecond()).substring(0,9) + generalMethods.getRandomString(1);
+        String text = generalMethods.getRandomString(40);
+        loginPage.goToRegisterPage(loginLink);
+        String email = registrationPage.validRegister(validEmail, validUserName);
+        otpPage.enterOTP(validOTP);
+        otpPage.goNext();
+        businessRolePage.successPath();
+        personalDetailsPage.successPath(email, validYear, month, day, country);
+        otpPage.enterOTP(validOTP);
+
+        generalMethods.printTestStep("1. Enter all information");
+        businessDetailsPage.fillIn1stForm(businessLegalName, 2, 1, uen, 2, 0);
+        businessDetailsPage.goNext();
+        businessDetailsPage.fillIn2ndForm(text, text, text, true,1, 1, 1);
+        businessDetailsPage.goNext();
+        businessDetailsPage.validate3ErrorMsg(null, null, websiteUrlErrorMsg);
+    }
+
+    @Test
+    public void checkBusinessDetailsPEP() throws IOException {
+        generalMethods.printTestName("======Start testing PEP page======");
+        String uen = String.valueOf(Instant.now().getEpochSecond()).substring(0,9) + generalMethods.getRandomString(1);
+        String text = generalMethods.getRandomString(40);
+        loginPage.goToRegisterPage(loginLink);
+        String email = registrationPage.validRegister(validEmail, validUserName);
+        otpPage.enterOTP(validOTP);
+        otpPage.goNext();
+        businessRolePage.successPath();
+        personalDetailsPage.successPath(email, validYear, month, day, country);
+        otpPage.enterOTP(validOTP);
+
+        generalMethods.printTestStep("1. Enter all information");
+        businessDetailsPage.fillIn1stForm(businessLegalName, 2, 1, uen, 2, 0);
+        businessDetailsPage.goNext();
+        businessDetailsPage.fillIn2ndForm(text, text, websiteURL, true,1, 1, 1);
+        businessDetailsPage.goNext();
+        generalMethods.clickWithJavaExecuter(businessDetailsPage.getPEPicon());
+        Assert.assertTrue("PEP page title should be displayed", businessDetailsPage.getPEPtitle().isDisplayed());
+        generalMethods.compareImagesSB(folderName, "PEP_page", null);
+    }
+
+    @Test
+    public void checkBusinessDetailsWithShareholders() throws IOException {
+        generalMethods.printTestName("======Start testing Register with Invalid URL======");
+        String uen = String.valueOf(Instant.now().getEpochSecond()).substring(0,9) + generalMethods.getRandomString(1);
+        String text = generalMethods.getRandomString(40);
+        loginPage.goToRegisterPage(loginLink);
+        String email = registrationPage.validRegister(validEmail, validUserName);
+        otpPage.enterOTP(validOTP);
+        otpPage.goNext();
+        businessRolePage.successPath();
+        personalDetailsPage.successPath(email, validYear, month, day, country);
+        otpPage.enterOTP(validOTP);
+
+        generalMethods.printTestStep("1. Enter all information");
+        businessDetailsPage.fillIn1stForm(businessLegalName, 2, 1, uen, 2, 0);
+        businessDetailsPage.goNext();
+        businessDetailsPage.fillIn2ndForm(text, text, websiteURL, false,1, 1, 1);
+        businessDetailsPage.goNext();
+        businessDetailsPage.select3rdForm(0, 2);
+        businessDetailsPage.goNext();
+        businessDetailsPage.uploadCertificate(System.getProperty("user.dir") + documentPath);
+        Assert.assertFalse("Submit button should be enabled", businessDetailsPage.getContinueBtn().getAttribute("class").contains("disabled"));
+    }
+
+    @Test
+    public void checkBusinessDetailsWithoutShareholders() throws IOException {
+        generalMethods.printTestName("======Start testing Register without selecting shareholder======");
+        String uen = String.valueOf(Instant.now().getEpochSecond()).substring(0,9) + generalMethods.getRandomString(1);
+        String text = generalMethods.getRandomString(40);
+        loginPage.goToRegisterPage(loginLink);
+        String email = registrationPage.validRegister(validEmail, validUserName);
+        otpPage.enterOTP(validOTP);
+        otpPage.goNext();
+        businessRolePage.successPath();
+        personalDetailsPage.successPath(email, validYear, month, day, country);
+        otpPage.enterOTP(validOTP);
+
+        generalMethods.printTestStep("1. Enter all information");
+        businessDetailsPage.fillIn1stForm(businessLegalName, 2, 1, uen, 2, 0);
+        businessDetailsPage.goNext();
+        businessDetailsPage.fillIn2ndForm(text, text, websiteURL, false,1, 1, 1);
+        businessDetailsPage.goNext();
+        businessDetailsPage.select3rdForm(1, 3);
+        businessDetailsPage.goNext();
+        businessDetailsPage.selectAllOptions(businessDetailsPage.getAccountUseSelect());
+        businessDetailsPage.selectAllOptions(businessDetailsPage.getBusinessFundedSelect());
+    }
+
+    @Test
+    public void checkBusinessDetailsWithSameAddress() throws IOException {
+        generalMethods.printTestName("======Start testing Register without selecting shareholder======");
+        String uen = String.valueOf(Instant.now().getEpochSecond()).substring(0,9) + generalMethods.getRandomString(1);
+        String text = generalMethods.getRandomString(40);
+        loginPage.goToRegisterPage(loginLink);
+        String email = registrationPage.validRegister(validEmail, validUserName);
+        otpPage.enterOTP(validOTP);
+        otpPage.goNext();
+        businessRolePage.successPath();
+        personalDetailsPage.successPath(email, validYear, month, day, country);
+        otpPage.enterOTP(validOTP);
+
+        generalMethods.printTestStep("1. Enter all information");
+        businessDetailsPage.fillIn1stForm(businessLegalName, 2, 1, uen, 2, 0);
+        businessDetailsPage.goNext();
+        businessDetailsPage.fillIn2ndForm(text, text, websiteURL, false,1, 1, 1);
+        businessDetailsPage.goNext();
+        businessDetailsPage.select3rdForm(1, 3);
+        businessDetailsPage.goNext();
+        businessDetailsPage.selectAnOption(businessDetailsPage.getAccountUseSelect(), 0);
+        businessDetailsPage.selectAnOption(businessDetailsPage.getBusinessFundedSelect(), 0);
+        businessDetailsPage.goNext();
+        businessDetailsPage.fillInLastForm(true);
+        businessDetailsPage.goNext();
+        Assert.assertTrue("Identity details screen should be displayed", identityVerificationPage.getDocumentUpload().isDisplayed());
+    }
+
+    @Test
+    public void checkBusinessDetailsWithDiffAddress() throws IOException {
+        generalMethods.printTestName("======Start testing Register without selecting shareholder======");
+        String uen = String.valueOf(Instant.now().getEpochSecond()).substring(0,9) + generalMethods.getRandomString(1);
+        String text = generalMethods.getRandomString(40);
+        loginPage.goToRegisterPage(loginLink);
+        String email = registrationPage.validRegister(validEmail, validUserName);
+        otpPage.enterOTP(validOTP);
+        otpPage.goNext();
+        businessRolePage.successPath();
+        personalDetailsPage.successPath(email, validYear, month, day, country);
+        otpPage.enterOTP(validOTP);
+
+        generalMethods.printTestStep("1. Enter all information");
+        businessDetailsPage.fillIn1stForm(businessLegalName, 2, 1, uen, 2, 0);
+        businessDetailsPage.goNext();
+        businessDetailsPage.fillIn2ndForm(text, text, websiteURL, false,1, 1, 1);
+        businessDetailsPage.goNext();
+        businessDetailsPage.select3rdForm(1, 3);
+        businessDetailsPage.goNext();
+        businessDetailsPage.selectAnOption(businessDetailsPage.getAccountUseSelect(), 0);
+        businessDetailsPage.selectAnOption(businessDetailsPage.getBusinessFundedSelect(), 0);
+        businessDetailsPage.goNext();
+        businessDetailsPage.fillInLastForm(false, mainAddress, city, province, postcode);
+        businessDetailsPage.goNext();
+        Assert.assertTrue("Identity details screen should be displayed", identityVerificationPage.getDocumentUpload().isDisplayed());
     }
 
 

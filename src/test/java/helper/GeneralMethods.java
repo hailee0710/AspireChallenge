@@ -691,9 +691,6 @@ public class GeneralMethods {
 
     public void clickOnElementAction(WebElement element) {
         try {
-            //Wait for element to be visible and clickable
-            waitForElementToBeVisible(element, 10);
-            waitForElementToBeClickable(element);
 
             Actions actions = new Actions(driver);
             actions.moveToElement(element).click().build().perform();

@@ -48,6 +48,7 @@ public class BaseTestDesktop {
     protected BusinessRolePage businessRolePage;
     protected PersonalDetailsPage personalDetailsPage;
     protected BusinessDetailsPage businessDetailsPage;
+    protected IdentityVerificationPage identityVerificationPage;
     protected static GeneralMethods commonMethods = new GeneralMethods();
     final static Logger logger = Logger.getLogger(BaseTestDesktop.class);
     protected final String folderName = "desktop/" + this.getClass().getSimpleName();
@@ -205,6 +206,7 @@ public class BaseTestDesktop {
         businessRolePage = new BusinessRolePage(driver);
         personalDetailsPage = new PersonalDetailsPage(driver);
         businessDetailsPage = new BusinessDetailsPage(driver);
+        identityVerificationPage = new IdentityVerificationPage(driver);
     }
 
     private void cleanUpImages() {
