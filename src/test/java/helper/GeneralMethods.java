@@ -279,9 +279,8 @@ public class GeneralMethods {
      * @return True or False based on result of pixel-by-pixel comparison between 2 images.
      * @throws Exception show any exception during the run.
      */
-    public Boolean compareImagesAshot(String folderName, String screenName, @Nullable By elementToBeTaken, double... threshold) throws Exception {
+    public void compareImagesAshot(String folderName, String screenName, @Nullable By elementToBeTaken, double... threshold) throws Exception {
         //initialize a variable to store comparison result.
-        boolean result = false;
         String refPath = System.getProperty("user.dir") + "/images/" + getProperties("browser") + "/" + folderName + "/references/" + screenName + "_ref_";
         if (folderName.contains("desktop")) {
             refPath = refPath + "1440x892.jpg";
@@ -361,25 +360,12 @@ public class GeneralMethods {
             if (diffProportion > th) {
                 //Render a new image with highlighted different and placed in Diff folder
                 ImageIO.write(diffImage, "png", diffHighlightedImage);
-                printErrorMsg("FAILED: Images " + screenName + " are different. Different percentage: " + String.format("%.2f", diffProportion * 100) + "% while threshold is " + th * 100 + "%");
-                if (ImageIO.read(actualImage).getWidth() != ImageIO.read(ref).getWidth() | ImageIO.read(actualImage).getHeight() != ImageIO.read(ref).getHeight()) {
-                    printErrorMsg("Images do not have the same size. Actual is: "
-                            + ImageIO.read(actualImage).getWidth()
-                            + "x"
-                            + ImageIO.read(actualImage).getHeight()
-                            + " while Ref is: "
-                            + ImageIO.read(ref).getWidth()
-                            + "x"
-                            + ImageIO.read(ref).getHeight()
-                    );
-                }
+                throw new AssertionError("FAILED: Images " + screenName + " are different. Different percentage: " + String.format("%.2f", diffProportion * 100) + "% while threshold is " + th * 100 + "%");
             }
             //If the proportion of different pixel is under the threshold, images are the same.
             else {
                 //Delete the image in New folder.
                 FileUtils.forceDelete(actualImage);
-                //Set result to true
-                result = true;
                 printSuccessMsg("PASSED: Images " + screenName + " are matched");
             }
         }
@@ -389,16 +375,13 @@ public class GeneralMethods {
             Screenshot r = takeScreenshot(folderName, elementToBeTaken);
             //Render image and placed in Reference folder
             ImageIO.write(r.getImage(), "PNG", new File(refPath));
-            //Set result to true
-            result = true;
             printSuccessMsg("This script is running for the first time, taking new screenshot as reference");
         }
-        return result;
+
     }
 
-    public boolean compareImagesSB(String folderName, String screenName, @Nullable By elementToBeTaken, double... threshold) throws IOException {
+    public void compareImagesSB(String folderName, String screenName, @Nullable By elementToBeTaken, double... threshold) throws IOException {
         //initialize a variable to store comparison result.
-        boolean result = false;
         pause(3000);
         List<WebElement> images = driver.findElements(By.xpath("//div[@id='main']//img"));
         if (!images.isEmpty()) {
@@ -519,25 +502,14 @@ public class GeneralMethods {
             if (diffProportion > th) {
                 //Render a new image with highlighted different and placed in Diff folder
                 ImageIO.write(diffImage, "png", diffHighlightedImage);
-                printErrorMsg("===FAILED: Images " + screenName + " are different. Different percentage: " + String.format("%.2f", diffProportion * 100) + "% while threshold is " + th * 100 + "%");
-                if (ImageIO.read(actualImage).getWidth() != ImageIO.read(ref).getWidth() | ImageIO.read(actualImage).getHeight() != ImageIO.read(ref).getHeight()) {
-                    printErrorMsg("Images do not have the same size. Actual is: "
-                            + ImageIO.read(actualImage).getWidth()
-                            + "x"
-                            + ImageIO.read(actualImage).getHeight()
-                            + " while Ref is: "
-                            + ImageIO.read(ref).getWidth()
-                            + "x"
-                            + ImageIO.read(ref).getHeight()
-                    );
-                }
+                throw new AssertionError("===FAILED: Images " + screenName + " are different. Different percentage: " + String.format("%.2f", diffProportion * 100) + "% while threshold is " + th * 100 + "%");
             }
+
             //If the proportion of different pixel is under the threshold, images are the same.
             else {
                 //Delete the image in New folder.
                 FileUtils.forceDelete(actualImage);
                 //Set result to true
-                result = true;
                 printSuccessMsg("PASSED: Images " + screenName + " matched");
             }
         }
@@ -593,11 +565,8 @@ public class GeneralMethods {
                             ;
             }
             //Render image and placed in Reference folder
-            //Set result to true
-            result = true;
             printSuccessMsg("===This script is running for the first time, taking new screenshot as reference");
         }
-        return result;
     }
 
     public void folderCheck(File name) {
