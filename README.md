@@ -18,7 +18,7 @@
 3. Since this project use JUnit4, so IntelliJ or Eclipse will natively support it. Just click on any run button to start running test
 ![img.png](img.png)
 
-**Disclaimer**: 
+**Note**: 
 - Since it's only 3 days development, so the tests might not be very stable. There is still room for improvement and it will take time.
 - Visual UI regression test is available and applied only to some selected test for demonstration purpose. 
 To identify the test case with Visual UI Regression, just notice that it includes the method named: `compareImagesAshot` or `compareImagesSB`
